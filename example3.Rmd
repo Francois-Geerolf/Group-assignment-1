@@ -1,0 +1,63 @@
+---
+title: Example 3
+subtitle: Group Assignment 3
+author: François Geerolf
+output:
+  bookdown::html_document2:
+    theme: flatly
+    highlight: haddock 
+    code_folding: hide
+    toc: yes
+    toc_depth: 4
+    toc_float: yes
+    lib_dir: libs
+    number_sections: false
+    self_contained: false
+---
+
+# Get Data
+
+```{r, echo = T, message = F}
+library("tidyverse")
+library("fredr")
+# fred_key <- "Put your key here"
+fredr_set_key(fred_key)
+
+GDP <- fredr(series_id = "GDP")
+PCE <- fredr(series_id = "PCE")
+GPDI <- fredr(series_id = "GPDI")
+```
+
+# Linear Scale
+
+```{r linear}
+GDP %>%
+  bind_rows(PCE) %>%
+  bind_rows(GPDI) %>%
+  filter(date >= as.Date("2019-01-01")) %>%
+  # select(1:3) %>%
+  group_by(series_id) %>%
+  mutate(value_100 = 100*value/value[1]) %>%
+  ggplot + geom_line(aes(x = date, y = value_100, color = series_id)) + 
+  theme_minimal() + xlab("") + ylab("")
+```
+
+
+
+# Log Scale
+
+```{r log}
+GDP %>%
+  bind_rows(PCE) %>%
+  bind_rows(GPDI) %>%
+  filter(date >= as.Date("2019-01-01")) %>%
+  # select(1:3) %>%
+  group_by(series_id) %>%
+  mutate(value_100 = 100*value/value[1]) %>%
+  ggplot + geom_line(aes(x = date, y = value_100, color = series_id)) + 
+  scale_y_log10() + 
+  theme_minimal() + xlab("") + ylab("")
+```
+
+
+
